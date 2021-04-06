@@ -14,6 +14,9 @@ namespace Ninja.ChessMaze
         public Direction startEdge, exitEdge;
         public bool randomPlacement;
 
+        public bool visualizeUsingPrefabs = false;
+        public bool autoRepair = true;
+
         [Range(1, 10)]
         public int numberOfPieces = 3;
 
@@ -42,8 +45,8 @@ namespace Ninja.ChessMaze
             MapHelper.RandomlyChooseAndSetStartAndExit(grid, ref startPosition, ref exitPosition, randomPlacement, startEdge, exitEdge);
             
             map = new CandidateMap(grid, numberOfPieces);
-            map.CreateMap(startPosition, exitPosition);
-            mapVisualizer.VisualizeMap(grid, map.GetMapData(), false);
+            map.CreateMap(startPosition, exitPosition, autoRepair);
+            mapVisualizer.VisualizeMap(grid, map.GetMapData(), visualizeUsingPrefabs);
         }
 
         public void TryRepair()
@@ -55,7 +58,7 @@ namespace Ninja.ChessMaze
                 if(listOfObstaclesToRemove.Count > 0)
                 {
                     mapVisualizer.ClearMap();
-                    mapVisualizer.VisualizeMap(grid, map.GetMapData(), false);
+                    mapVisualizer.VisualizeMap(grid, map.GetMapData(), visualizeUsingPrefabs);
                 }
             }
         }

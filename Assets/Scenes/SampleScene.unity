@@ -154,6 +154,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   startColor: {r: 0.91372555, g: 1, b: 0, a: 0}
   exitColor: {r: 0, g: 0.046190023, b: 1, a: 0}
+  roadStraight: {fileID: -927199367670048503, guid: 355ae750ffa048944a06b7035218160c, type: 3}
+  roadTileCorner: {fileID: -927199367670048503, guid: 244f0e0d3a9397241a523beb97ea38e6, type: 3}
+  tileEmpty: {fileID: -927199367670048503, guid: d6c08152ea172d147a59e2891bcffdea, type: 3}
+  startTile: {fileID: -927199367670048503, guid: a1df9455fa456e2438800ed96a640477, type: 3}
+  exitTile: {fileID: 4747349619790662207, guid: e9d71a77b4d246b4f9fbf5bf8bff2228, type: 3}
+  environmentTiles:
+  - {fileID: -927199367670048503, guid: afd0cd7bb40b9b34687be9eaa2dba49b, type: 3}
+  - {fileID: -927199367670048503, guid: 7d86cc91f68492a408173d5e5e7aa034, type: 3}
+  - {fileID: -927199367670048503, guid: 58ac81c1b8764ce41ac972f9b4f0482b, type: 3}
+  - {fileID: -927199367670048503, guid: 24abf5b0ac409a84593e0afa0e3b7f55, type: 3}
+  - {fileID: -927199367670048503, guid: 1198d8470423f1d42a52db281d394a88, type: 3}
 --- !u!4 &207371329
 Transform:
   m_ObjectHideFlags: 0
@@ -202,9 +213,11 @@ MonoBehaviour:
   startEdge: 2
   exitEdge: 1
   randomPlacement: 0
-  numberOfPieces: 4
-  width: 11
-  length: 11
+  visualizeUsingPrefabs: 1
+  autoRepair: 1
+  numberOfPieces: 10
+  width: 10
+  length: 10
 --- !u!4 &1220411617
 Transform:
   m_ObjectHideFlags: 0
@@ -463,10 +476,10 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2138677391}
-  m_LocalRotation: {x: 0.40378994, y: -0, z: -0, w: 0.9148518}
+  m_LocalRotation: {x: 0.5519369, y: 0, z: 0, w: 0.83388585}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 47.631, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 67, y: 0, z: 0}

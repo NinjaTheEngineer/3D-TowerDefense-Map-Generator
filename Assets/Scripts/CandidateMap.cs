@@ -49,11 +49,6 @@ namespace Ninja.ChessMaze
         private void FindPath()
         {
             this.path = Astar.GetPath(startPoint, exitPoint, obstaclesArray, grid);
-
-            foreach(var position in this.path)
-            {
-                Debug.Log(position);
-            }
         }
 
         private bool CheckIfPositionCanBeObstacle(Vector3 position)
@@ -125,7 +120,8 @@ namespace Ninja.ChessMaze
                 obstacleArray = this.obstaclesArray,
                 knightPieceList = knightPiecesList,
                 startPosition = startPoint,
-                exitPosition = exitPoint
+                exitPosition = exitPoint,
+                path = this.path
             };
         }
 
