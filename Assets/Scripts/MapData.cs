@@ -9,5 +9,6 @@ namespace Ninja.ChessMaze
         public List<KnightPiece> knightPieceList;
         public Vector3 startPosition;
         public Vector3 exitPosition;
+        public List<Vector3> path;
     }
 }

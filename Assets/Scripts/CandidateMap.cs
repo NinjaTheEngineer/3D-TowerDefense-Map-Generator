@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -14,6 +15,7 @@ namespace Ninja.ChessMaze
         private List<KnightPiece> knightPiecesList;
 
         private bool[] obstaclesArray = null;
+        private List<Vector3> path = new List<Vector3>();
 
         public MapGrid Grid { get => grid; }
         public bool[] ObstaclesArray { get => obstaclesArray; }
@@ -36,6 +38,17 @@ namespace Ninja.ChessMaze
             RandomlyPlaceKnightPieces(this.numberOfPieces);
 
             PlaceObstacles();
+            FindPath();
+
+            if (autoRepair)
+            {
+                Repair();
+            }
+        }
+
+        private void FindPath()
+        {
+            this.path = Astar.GetPath(startPoint, exitPoint, obstaclesArray, grid);
         }
 
         private bool CheckIfPositionCanBeObstacle(Vector3 position)
@@ -107,8 +120,53 @@ namespace Ninja.ChessMaze
                 obstacleArray = this.obstaclesArray,
                 knightPieceList = knightPiecesList,
                 startPosition = startPoint,
-                exitPosition = exitPoint
+                exitPosition = exitPoint,
+                path = this.path
             };
+        }
+
+        public List<Vector3> Repair()
+        {
+            int numberOfObstacles = obstaclesArray.Where(obstacle => obstacle).Count();
+
+            List<Vector3> listOfObstaclesToRemove = new List<Vector3>();
+
+            if(path.Count <= 0)
+            {
+                do
+                {
+                    int obstacleIndexToRemove = Random.Range(0, numberOfObstacles);
+
+                    for (int i = 0; i < obstaclesArray.Length; i++)
+                    {
+                        if (obstaclesArray[i])
+                        {
+                            if(obstacleIndexToRemove == 0)
+                            {
+                                obstaclesArray[i] = false;
+                                listOfObstaclesToRemove.Add(grid.CalculateIndexFromCoordinatesFromIndex(i));
+                                break;
+                            }
+
+                            obstacleIndexToRemove--;
+                        }
+
+                    }
+
+                    FindPath();
+                } while (this.path.Count <= 0);
+            }
+
+            foreach (var obstacle in listOfObstaclesToRemove)
+            {
+                if(path.Contains(obstacle) == false)
+                {
+                    int index = grid.CalculateIndexFromCoordinates(obstacle.x, obstacle.z);
+                    obstaclesArray[index] = true;
+                }
+            }
+
+            return listOfObstaclesToRemove;
         }
     }
 }

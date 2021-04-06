@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace Ninja.ChessMaze
 {
@@ -10,6 +11,10 @@ namespace Ninja.ChessMaze
         private Transform parent;
 
         public Color startColor, exitColor;
+
+        public GameObject roadStraight, roadTileCorner, tileEmpty,
+                          startTile, exitTile;
+        public GameObject[] environmentTiles;
 
         Dictionary<Vector3, GameObject> dictionaryOfObstacles = new Dictionary<Vector3, GameObject>();
 
@@ -22,12 +27,70 @@ namespace Ninja.ChessMaze
         {
             if (visualizeUsingPrefabs)
             {
-
+                VisualizeUsingPrefabs(grid, data);
             }
             else
             {
                 VisualizeUsingPrimitives(grid, data);
             }
+        }
+
+        private void VisualizeUsingPrefabs(MapGrid grid, MapData data)
+        {
+            for (int i = 0; i < data.path.Count; i++)
+            {
+                var position = data.path[i];
+                if(position != data.exitPosition)
+                {
+                    grid.SetCell(position.x, position.z, CellObjectType.Road);
+                }
+            }
+
+            for (int col = 0; col < grid.Width; col++)
+            {
+                for (int row = 0; row < grid.Length; row++)
+                {
+                    var cell = grid.GetCell(col, row);
+                    var position = new Vector3(cell.X, 0, cell.Z);
+
+                    var index = grid.CalculateIndexFromCoordinates(position.x, position.z);
+                    if(data.obstacleArray[index] && !cell.IsTaken)
+                    {
+                        cell.ObjectType = CellObjectType.Obstacle;
+                    }
+
+                    switch (cell.ObjectType)
+                    {
+                        case CellObjectType.Empty:
+                            CreateIndicator(position, tileEmpty);
+                            break;
+                        case CellObjectType.Road:
+                            CreateIndicator(position, roadStraight);
+                            break;
+                        case CellObjectType.Obstacle:
+                            int randomIndex = Random.Range(0, environmentTiles.Length);
+                            CreateIndicator(position, environmentTiles[randomIndex]);
+                            break;
+                        case CellObjectType.Start:
+                            CreateIndicator(position, startTile);
+                            break;
+                        case CellObjectType.Exit:
+                            CreateIndicator(position, exitTile);
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }
+        }
+
+        private void CreateIndicator(Vector3 position, GameObject prefab, Quaternion rotation = new Quaternion())
+        {
+            var placementPosition = position + new Vector3(.5f, .5f, .5f);
+            var element = Instantiate(prefab, placementPosition, rotation);
+
+            element.transform.parent = parent;
+            dictionaryOfObstacles.Add(position, element); 
         }
 
         private void VisualizeUsingPrimitives(MapGrid grid, MapData data)

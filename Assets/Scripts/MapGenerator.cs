@@ -7,12 +7,15 @@ namespace Ninja.ChessMaze
     public class MapGenerator : MonoBehaviour
     {
         public GridVisualizer gridVisualizer;
-
+        private CandidateMap map;
         public MapVisualizer mapVisualizer;
 
         private Vector3 startPosition, exitPosition;
         public Direction startEdge, exitEdge;
         public bool randomPlacement;
+
+        public bool visualizeUsingPrefabs = false;
+        public bool autoRepair = true;
 
         [Range(1, 10)]
         public int numberOfPieces = 3;
@@ -41,9 +44,23 @@ namespace Ninja.ChessMaze
             
             MapHelper.RandomlyChooseAndSetStartAndExit(grid, ref startPosition, ref exitPosition, randomPlacement, startEdge, exitEdge);
             
-            CandidateMap map = new CandidateMap(grid, numberOfPieces);
-            map.CreateMap(startPosition, exitPosition);
-            mapVisualizer.VisualizeMap(grid, map.GetMapData(), false);
+            map = new CandidateMap(grid, numberOfPieces);
+            map.CreateMap(startPosition, exitPosition, autoRepair);
+            mapVisualizer.VisualizeMap(grid, map.GetMapData(), visualizeUsingPrefabs);
+        }
+
+        public void TryRepair()
+        {
+            if(map != null)
+            {
+                var listOfObstaclesToRemove = map.Repair();
+
+                if(listOfObstaclesToRemove.Count > 0)
+                {
+                    mapVisualizer.ClearMap();
+                    mapVisualizer.VisualizeMap(grid, map.GetMapData(), visualizeUsingPrefabs);
+                }
+            }
         }
     }
 }
