@@ -20,9 +20,14 @@ namespace Ninja.ChessMaze
             base.OnInspectorGUI();
             if (Application.isPlaying)
             {
-                if(GUILayout.Button("Generate new map"))
+                if (GUILayout.Button("Generate new map"))
                 {
                     mapGenerator.GenerateNewMap();
+                }
+
+                if (GUILayout.Button("Repair map"))
+                {
+                    mapGenerator.TryRepair();
                 }
             }
         }
