@@ -198,9 +198,9 @@ namespace Ninja.ChessMaze
         private void CreateIndicator(Vector3 position, GameObject prefab, Quaternion rotation = new Quaternion())
         {
             var placementPosition = position + new Vector3(.5f, .5f, .5f);
-            var element = Instantiate(prefab, placementPosition, rotation);
-
+            GameObject element = Instantiate(prefab, placementPosition, rotation);
             element.transform.parent = parent;
+
             dictionaryOfObstacles.Add(position, element);
 
             if (animate)

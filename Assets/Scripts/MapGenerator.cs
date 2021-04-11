@@ -30,7 +30,7 @@ namespace Ninja.ChessMaze
 
 
             gridVisualizer.VisualizeGrid(width, length);
-            GenerateNewMap();
+            //GenerateNewMap();
 
             //Debug.Log(startPosition);
             //Debug.Log(exitPosition);

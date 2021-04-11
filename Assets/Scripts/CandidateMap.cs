@@ -17,6 +17,8 @@ namespace Ninja.ChessMaze
         private bool[] obstaclesArray = null;
         private List<Vector3> path = new List<Vector3>();
 
+        private List<Vector3> cornersList;
+        private int cornersNearEachOtherCount;
         public MapGrid Grid { get => grid; }
         public bool[] ObstaclesArray { get => obstaclesArray; }
 
@@ -46,9 +48,68 @@ namespace Ninja.ChessMaze
             }
         }
 
-        private void FindPath()
+        public void FindPath()
         {
             this.path = Astar.GetPath(startPoint, exitPoint, obstaclesArray, grid);
+            this.cornersList = GetListOfCorners(this.path);
+            this.cornersNearEachOtherCount = CalculateCornersNearEachOther(this.cornersList);
+        }
+
+        private int CalculateCornersNearEachOther(List<Vector3> cornersList)
+        {
+            int cornersNearsEachOther = 0;
+
+            for (int i = 0; i < cornersList.Count - 1; i++)
+            {
+                if(Vector3.Distance(cornersList[i], cornersList[i + 1]) <= 1)
+                {
+                    cornersNearsEachOther++;
+                }
+            }
+            return cornersNearsEachOther;
+        }
+
+        private List<Vector3> GetListOfCorners(List<Vector3> path)
+        {
+            List<Vector3> pathWithStart = new List<Vector3>(path);
+            pathWithStart.Insert(0, startPoint);
+            List<Vector3> cornersPositions = new List<Vector3>();
+
+            if(pathWithStart.Count <= 0)
+            {
+                return cornersPositions;
+            }
+
+            for (int i = 1; i < pathWithStart.Count-2; i++)
+            {
+                float currentPathPositionX = pathWithStart[i].x;
+                float previousPathPositionX = pathWithStart[i-1].x;
+                float nextPathPositionX = pathWithStart[i+1].x;
+
+                float currentPathPositionZ = pathWithStart[i].z;
+                float previousPathPositionZ = pathWithStart[i-1].z;
+                float nextPathPositionZ = pathWithStart[i+1].z;
+
+                if (currentPathPositionX > previousPathPositionX
+                || currentPathPositionX < previousPathPositionX)
+                {
+                    if(nextPathPositionZ > currentPathPositionZ 
+                    || nextPathPositionZ < currentPathPositionZ)
+                    {
+                        cornersPositions.Add(pathWithStart[i]);
+                    }
+                }
+                else if (currentPathPositionZ > previousPathPositionZ
+                || currentPathPositionZ < previousPathPositionZ)
+                {
+                    if (nextPathPositionX > currentPathPositionX
+                    || nextPathPositionX < currentPathPositionX)
+                    {
+                        cornersPositions.Add(pathWithStart[i]);
+                    }
+                }
+            }
+            return cornersPositions;
         }
 
         private bool CheckIfPositionCanBeObstacle(Vector3 position)
@@ -61,6 +122,19 @@ namespace Ninja.ChessMaze
             int index = grid.CalculateIndexFromCoordinates(position.x, position.z);
 
             return obstaclesArray[index] == false;
+        }
+
+        public MapData ReturnMapData()
+        {
+            return new MapData
+            {
+                obstacleArray = this.obstaclesArray,
+                knightPieceList = knightPiecesList,
+                startPosition = startPoint,
+                exitPosition = exitPoint,
+                path = this.path,
+                cornersList = this.cornersList
+            };
         }
 
         private void RandomlyPlaceKnightPieces(int numberOfPieces)
@@ -121,8 +195,20 @@ namespace Ninja.ChessMaze
                 knightPieceList = knightPiecesList,
                 startPosition = startPoint,
                 exitPosition = exitPoint,
-                path = this.path
+                path = this.path,
+                cornersList = this.cornersList,
+                cornersNearEachOther = this.cornersNearEachOtherCount
             };
+        }
+
+        public bool IsObstacleAt(int i)
+        {
+            return obstaclesArray[i];
+        }
+
+        public void PlaceObstacle(int i, bool isObstacle)
+        {
+            obstaclesArray[i] = isObstacle;
         }
 
         public List<Vector3> Repair()
@@ -168,5 +254,33 @@ namespace Ninja.ChessMaze
 
             return listOfObstaclesToRemove;
         }
+
+        public void AddMutation(double mutationRate)
+        {
+            int numItems = (int) (obstaclesArray.Length * mutationRate);
+            while(numItems > 0)
+            {
+                int randomIndex = Random.Range(0, obstaclesArray.Length);
+                obstaclesArray[randomIndex] = !obstaclesArray[randomIndex];
+                numItems--;
+            }
+        }
+
+        public CandidateMap DeepClone()
+        {
+            return new CandidateMap(this);
+        }
+
+        public CandidateMap(CandidateMap candidateMap)
+        {
+            this.grid = candidateMap.grid;
+            this.startPoint = candidateMap.startPoint;
+            this.exitPoint = candidateMap.exitPoint;
+            this.obstaclesArray = (bool[])candidateMap.obstaclesArray.Clone();
+            this.cornersList = new List<Vector3>(candidateMap.cornersList);
+            this.cornersNearEachOtherCount = candidateMap.cornersNearEachOtherCount;
+            this.path = new List<Vector3>(candidateMap.path);
+        }
+
     }
 }
